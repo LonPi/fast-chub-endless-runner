@@ -7,13 +7,11 @@ public class Parallax : MonoBehaviour {
     public float scrollingSpeed;
     public Transform[] childLayers;
     float gapLength;
-    Vector2 initialPosition;
     float coveredDistance;
 
 	void Start ()
     {
         gapLength = Mathf.Abs(childLayers[0].position.x - childLayers[1].position.x);
-        initialPosition = transform.localPosition;
         coveredDistance = 0f;
 	}
 	
