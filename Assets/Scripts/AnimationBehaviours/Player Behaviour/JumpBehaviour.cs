@@ -9,6 +9,7 @@ public class JumpBehaviour : StateMachineBehaviour {
     {
         Player.Instance.Jump = true;
         Player.Instance._rb2D.velocity = new Vector2(0f, Player.Instance.jumpSpeed);
+        //Player.Instance._rb2D.AddForce(new Vector2(0f, Player.Instance.jumpSpeed));
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

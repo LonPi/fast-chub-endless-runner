@@ -7,16 +7,21 @@ public class Enemy : MonoBehaviour {
     public float moveSpeed;
     public float minAttackInterval, maxAttackInterval;
     public GameObject Bullet;
+    float relativeSpeedToGround;
+    float direction = -1;
     Rigidbody2D _rb2D;
     bool isFacingRight;
     float randomInterval;
     float attackTimer;
     Animator _animator;
+    bool _wasVisible;
+
     void Start () {
         _rb2D = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         isFacingRight = true;
         attackTimer = 0f;
+        relativeSpeedToGround = direction * (Player.Instance.relativeSpeedToGround + moveSpeed);
         GenerateRandomAttackInterval();
 	}
 
@@ -24,7 +29,7 @@ public class Enemy : MonoBehaviour {
     {
         Move();
         Attack();
-	}
+    }
 
     void Attack()
     {
@@ -33,7 +38,6 @@ public class Enemy : MonoBehaviour {
         {
             _animator.SetTrigger("attack");
             GameObject obj = Instantiate(Bullet, transform.position, Quaternion.identity);
-            obj.GetComponent<Bullet>().SetParams(Player.Instance.transform.position);
             attackTimer = 0f;
             GenerateRandomAttackInterval();
         }
@@ -41,7 +45,7 @@ public class Enemy : MonoBehaviour {
 
     void Move()
     {
-        transform.Translate(new Vector2(moveSpeed * -1, 0f) * Time.deltaTime);
+        _rb2D.velocity = new Vector2(relativeSpeedToGround, _rb2D.velocity.y);
         Flip();
     }
     public void SetParams(float moveSpeed)

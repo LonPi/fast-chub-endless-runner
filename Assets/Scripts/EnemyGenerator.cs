@@ -36,7 +36,6 @@ public class EnemyGenerator : MonoBehaviour {
         float minIndex = 0.01f;
         float maxIndex = EnemiesToGenerate.Length - 0.01f;
         int randomIndex = (int)Mathf.Floor(Random.Range(minIndex, maxIndex));
-
         Instantiate(EnemiesToGenerate[randomIndex], transform.position, Quaternion.identity);
 
     }

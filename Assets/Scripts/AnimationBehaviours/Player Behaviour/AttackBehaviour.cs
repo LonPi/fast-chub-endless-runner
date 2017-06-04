@@ -23,7 +23,7 @@ public class AttackBehaviour : StateMachineBehaviour {
         Dictionary<int, GameObject> dict = Player.Instance.damagedEnemies;
         foreach (KeyValuePair<int, GameObject> kvp in dict)
         {
-            Debug.Log("Applying damage to " + kvp.Key + " " + kvp.Value.name);
+            //Debug.Log("Applying damage to " + kvp.Key + " " + kvp.Value.name);
         }
 
         dict.Clear();

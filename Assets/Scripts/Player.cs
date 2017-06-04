@@ -18,15 +18,15 @@ public class Player : MonoBehaviour {
     }
 
     public bool Jump { get; set; }
+    public bool Attack { get; set; }
+    public bool OnGround { get { return IsGrounded(); } }
+    public Rigidbody2D _rb2D { get; set; }
+    public float relativeSpeedToGround { get; private set; }
+
+    BoxCollider2D _boxCollider;
+    Animator _animator;
     bool secondJumpAvail;
     bool canJump;
-    bool isJumping;
-    public bool Attack { get; set; }
-    public bool HasJumpedTwice { get; set; }
-    public bool OnGround { get { return IsGrounded(); } }
-    Animator _animator;
-    public Rigidbody2D _rb2D { get; set; }
-    BoxCollider2D _boxCollider;
     public Dictionary<int, GameObject> damagedEnemies = new Dictionary<int, GameObject>();
 
 	void Start ()
@@ -34,6 +34,7 @@ public class Player : MonoBehaviour {
         _animator = GetComponent<Animator>();
         _rb2D = GetComponent<Rigidbody2D>();
         _boxCollider = GetComponent<BoxCollider2D>();
+        relativeSpeedToGround = GameObject.Find("Ground").GetComponent<Parallax>().scrollingSpeed;
     }
 	
 	void Update ()
@@ -113,9 +114,9 @@ public class Player : MonoBehaviour {
         foreach(Collider2D _collider in hits)
         {
             int instanceID = _collider.transform.root.GetInstanceID();
-            //Debug.LogError("hit: " + instanceID + " " + _collider.transform.gameObject.name);
             if (!damagedEnemies.ContainsKey(instanceID)) {
                 damagedEnemies.Add(instanceID, _collider.transform.root.gameObject);
+                //Debug.LogError("hit: " + instanceID + " " + _collider.transform.root.name);
             }
         }
         

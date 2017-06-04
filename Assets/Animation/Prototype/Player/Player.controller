@@ -61,6 +61,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0054b5a3ec0356945b43663d722bbcb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114446805589594902
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7d39b34b024c7f49ba4c16b4d88c63c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114649701527050350
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -341,11 +352,11 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0
   m_TransitionOffset: 0
   m_ExitTime: 0.7058823
-  m_HasExitTime: 1
-  m_HasFixedDuration: 1
+  m_HasExitTime: 0
+  m_HasFixedDuration: 0
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
@@ -464,7 +475,8 @@ AnimatorState:
   m_Transitions:
   - {fileID: 1101824967627780010}
   - {fileID: 1101407281438681568}
-  m_StateMachineBehaviours: []
+  m_StateMachineBehaviours:
+  - {fileID: 114446805589594902}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
