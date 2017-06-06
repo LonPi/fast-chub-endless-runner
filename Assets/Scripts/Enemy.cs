@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour {
 
-    public float moveSpeed;
+    public float moveSpeed, maxHitpoints;
     public float minAttackInterval, maxAttackInterval;
     public GameObject Bullet;
     float relativeSpeedToGround;
@@ -13,6 +13,7 @@ public class Enemy : MonoBehaviour {
     bool isFacingRight;
     float randomInterval;
     float attackTimer;
+    float curHitpoints;
     Animator _animator;
     bool _wasVisible;
 
@@ -22,6 +23,7 @@ public class Enemy : MonoBehaviour {
         isFacingRight = true;
         attackTimer = 0f;
         relativeSpeedToGround = direction * (Player.Instance.relativeSpeedToGround + moveSpeed);
+        curHitpoints = maxHitpoints;
         GenerateRandomAttackInterval();
 	}
 
@@ -48,9 +50,15 @@ public class Enemy : MonoBehaviour {
         _rb2D.velocity = new Vector2(relativeSpeedToGround, _rb2D.velocity.y);
         Flip();
     }
+
     public void SetParams(float moveSpeed)
     {
         this.moveSpeed = moveSpeed;
+    }
+
+    public void ApplyDamage(float _damage)
+    {
+        this.curHitpoints -= _damage;
     }
 
     void GenerateRandomAttackInterval()

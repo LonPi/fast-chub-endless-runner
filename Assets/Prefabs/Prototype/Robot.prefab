@@ -457,7 +457,7 @@ GameObject:
   - component: {fileID: 61073325544561686}
   m_Layer: 11
   m_Name: Robot
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1070,7 +1070,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1605626963678136}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16.53, y: -2.56, z: 0}
+  m_LocalPosition: {x: 33.95, y: -2.56, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_Children:
   - {fileID: 4688644852827924}
@@ -6184,8 +6184,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 0
-  minAttackInterval: 5
-  maxAttackInterval: 6
+  maxHitpoints: 0
+  minAttackInterval: 2
+  maxAttackInterval: 3
   Bullet: {fileID: 1915677005671302, guid: 98fa5401bb4d71f498e444a2657c1829, type: 2}
 --- !u!212 &212341198455522458
 SpriteRenderer:

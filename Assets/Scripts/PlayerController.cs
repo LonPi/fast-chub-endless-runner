@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         myCollider = GetComponent<BoxCollider2D>();
-        layerMask = 1 << LayerMask.NameToLayer("Collision");
+        layerMask = 1 << LayerMask.NameToLayer("Ground");
         CalculateRaySpacing();
         collisionInfo.Reset();
         state.Reset();
@@ -35,6 +35,8 @@ public class PlayerController : MonoBehaviour
     {
         CalculateRaySpacing();
         CalculateRaycastOrigins();
+
+        
     }
 
     void CalculateRaycastOrigins()
@@ -58,12 +60,6 @@ public class PlayerController : MonoBehaviour
             HandleHorizontalMovement(ref deltaMovement);
         transform.Translate(deltaMovement);
 
-    }
-
-    public void Blink(ref Vector2 deltaMovement)
-    {
-        collisionInfo.Reset();
-        HandleHorizontalMovement(ref deltaMovement);
     }
 
     void HandleVerticalMovement(ref Vector2 deltaMovement)

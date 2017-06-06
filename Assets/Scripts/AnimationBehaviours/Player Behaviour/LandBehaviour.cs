@@ -15,6 +15,7 @@ public class LandBehaviour : StateMachineBehaviour {
         if (Player.Instance.OnGround)
         {
             animator.SetBool("land", false);
+            animator.SetBool("onGround", true);
         }
     }
 

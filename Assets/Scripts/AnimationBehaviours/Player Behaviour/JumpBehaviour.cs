@@ -8,16 +8,21 @@ public class JumpBehaviour : StateMachineBehaviour {
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         Player.Instance.Jump = true;
-        Player.Instance._rb2D.velocity = new Vector2(0f, Player.Instance.jumpSpeed);
-        //Player.Instance._rb2D.AddForce(new Vector2(0f, Player.Instance.jumpSpeed));
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (Player.Instance._rb2D.velocity.y <= 0)
+        if (Player.Instance.velocity.y <= 0)
         {
             animator.SetBool("land", true);
+            animator.SetBool("jump", false);
+        }
+
+   
+        if (Mathf.Abs(Player.Instance.velocity.y) <= 0.2f)
+        {
+            animator.SetBool("jump", false);
         }
     }
 

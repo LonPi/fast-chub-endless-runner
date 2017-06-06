@@ -14,28 +14,21 @@ public class AttackBehaviour : StateMachineBehaviour {
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         Player.Instance.LaunchAttack();
+        Player.Instance.BounceOffBullet();
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         
-        Dictionary<int, GameObject> dict = Player.Instance.damagedEnemies;
-        foreach (KeyValuePair<int, GameObject> kvp in dict)
-        {
-            //Debug.Log("Applying damage to " + kvp.Key + " " + kvp.Value.name);
-        }
+        Dictionary<int, Collider2D> damagedEnemyList = Player.Instance.damagedEnemyList;
+        // TODO: Apply damage value to enemies
 
-        dict.Clear();
+        //foreach (KeyValuePair<int, GameObject> kvp in damagedEnemyList)
+        //{
+        //    Debug.Log("Applying damage to " + kvp.Key + " " + kvp.Value.name);
+        //}
+        
+        damagedEnemyList.Clear();
     }
-
-    // OnStateMove is called right after Animator.OnAnimatorMove(). Code that processes and affects root motion should be implemented here
-    //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-    //
-    //}
-
-    // OnStateIK is called right after Animator.OnAnimatorIK(). Code that sets up animation IK (inverse kinematics) should be implemented here.
-    //override public void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
-    //
-    //}
 }
