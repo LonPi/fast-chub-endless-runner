@@ -144,11 +144,11 @@ public class Player : MonoBehaviour {
             Vector2 raycastDirection = (hitbox.bounds.center - collider.bounds.center).normalized;
             RaycastHit2D hit = Physics2D.Raycast(collider.bounds.center, raycastDirection, raycastDistance, _layerMask);
             //Debug.LogError("Player.LaunchAttack() Bullet center: " + _collider.bounds.center  + " hitbox center: " + hitbox.bounds.center + " intersect point: " + hit.point + " distance= " + raycastDistance);
-            Vector2 contactPoint = new Vector2(hitbox.bounds.center.x + hitbox.bounds.extents.x, hit.point.y);
-            Assert.IsTrue(hitbox.bounds.Contains(contactPoint));
+            //Vector2 contactPoint = new Vector2(hitbox.bounds.center.x + hitbox.bounds.extents.x, hit.point.y);
+            Vector2 contactPoint = hit.point;
 
             Bullet bullet = collider.gameObject.GetComponent<Bullet>();
-            if (bullet != null)
+            if (bullet != null && !bullet.bounced)
             {
                 float bouncingAngle = CalculateBounceAngle(contactPoint, hitbox);
                 bullet.SetVelocity(bouncingAngle);
@@ -166,15 +166,8 @@ public class Player : MonoBehaviour {
 
     float CalculateBounceAngle(Vector2 contactPoint, Collider2D hitbox)
     {
-        float bounceAngle = Random.Range(22.5f, 70f);
+        float bounceAngle = Random.Range(10.5f, 30f);
         Debug.Log("original bounce angle: " + bounceAngle);
-        bool a = false;
-        if (contactPoint.y >= hitbox.bounds.center.y)
-        {
-            bounceAngle += 90f;
-            a = true;
-        }
-        Debug.Log("returned bounce angle: " + bounceAngle + " hit point below half: " + a);
         return bounceAngle;
     }
 }
