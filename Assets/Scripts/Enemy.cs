@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour {
 
-    public float moveSpeed, maxHitpoints;
+    public float moveSpeed, maxHitpoints, damage;
     public float minAttackInterval, maxAttackInterval;
     public GameObject Bullet;
     float relativeSpeedToGround;

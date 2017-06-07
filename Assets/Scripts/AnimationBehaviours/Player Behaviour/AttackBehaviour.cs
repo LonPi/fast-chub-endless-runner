@@ -15,6 +15,7 @@ public class AttackBehaviour : StateMachineBehaviour {
     {
         Player.Instance.LaunchAttack();
         Player.Instance.BounceOffBullet();
+        
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
@@ -28,7 +29,9 @@ public class AttackBehaviour : StateMachineBehaviour {
         //{
         //    Debug.Log("Applying damage to " + kvp.Key + " " + kvp.Value.name);
         //}
-        
+        Player.Instance.incomingBulletList.Clear();
+        Player.Instance.tookDamageFromBulletList.Clear();
+        Player.Instance.deflectedBulletList.Clear();
         damagedEnemyList.Clear();
     }
 }

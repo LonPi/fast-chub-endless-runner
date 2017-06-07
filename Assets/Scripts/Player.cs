@@ -5,7 +5,7 @@ using UnityEngine.Assertions;
 
 public class Player : MonoBehaviour {
 
-    public float jumpHeight;
+    public float jumpHeight, maxHitpoints;
     private static Player instance;
     public static Player Instance
     {
@@ -24,7 +24,8 @@ public class Player : MonoBehaviour {
     public float relativeSpeedToGround { get; private set; }
     public Dictionary<int, Collider2D> damagedEnemyList = new Dictionary<int, Collider2D>();
     public Dictionary<int, Collider2D> incomingBulletList = new Dictionary<int, Collider2D>();
-
+    public Dictionary<int, int> deflectedBulletList = new Dictionary<int, int>();
+    public Dictionary<int, int> tookDamageFromBulletList = new Dictionary<int, int>();
     // private variables
     int horizontalRayCount = 7, verticalRayCount = 7;
     float skinWidth = .015f;
@@ -33,18 +34,25 @@ public class Player : MonoBehaviour {
     Vector2 _velocity;
     PlayerController _playerController;
     BoxCollider2D hitbox;
+    SpriteRenderer _spriteRenderer;
     float gravity = -20f;
-    bool secondJumpAvailable;
-    bool canJump;
+    float _currentHitpoint;
+    bool secondJumpAvailable, canJump;
+    bool _isDead;
     int _layerMask;
+    bool _tookDamageFromBulletPreviously, _deflectedBullet;
+    int _tookDamageFromBulletID, _deflectedBulletID;
     
 
 	void Start ()
     {
         _animator = GetComponent<Animator>();
         _playerController = GetComponent<PlayerController>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
         relativeSpeedToGround = GameObject.Find("Ground").GetComponent<Parallax>().scrollingSpeed;
         _layerMask = 1 << LayerMask.NameToLayer("Enemy");
+        _currentHitpoint = maxHitpoints;
+        _deflectedBullet = _tookDamageFromBulletPreviously = false;
     }
 	
 	void Update ()
@@ -102,7 +110,6 @@ public class Player : MonoBehaviour {
         Transform hitboxTransform = transform.Find("Hitbox");
         int childCount = hitboxTransform.childCount;
         
-
         for (int i = 0; i < childCount; i++)
         {
             if (hitboxTransform.GetChild(i).gameObject.activeInHierarchy)
@@ -113,7 +120,6 @@ public class Player : MonoBehaviour {
         }
 
         Assert.IsNotNull(hitbox);
-
         Bounds bounds = hitbox.bounds;
         Vector2 bottomLeft = transform.TransformPoint(bounds.min);
         Vector2 topRight = transform.TransformPoint(bounds.max);
@@ -130,7 +136,6 @@ public class Player : MonoBehaviour {
             if (_collider.transform.root.tag == "Bullet" && !incomingBulletList.ContainsKey(instanceID))
             {
                 incomingBulletList.Add(instanceID, _collider);
-                Debug.LogError("bullet hit");
             }
         }
     }
@@ -143,18 +148,42 @@ public class Player : MonoBehaviour {
             float raycastDistance = Vector2.Distance(hitbox.bounds.center, collider.bounds.center);
             Vector2 raycastDirection = (hitbox.bounds.center - collider.bounds.center).normalized;
             RaycastHit2D hit = Physics2D.Raycast(collider.bounds.center, raycastDirection, raycastDistance, _layerMask);
-            //Debug.LogError("Player.LaunchAttack() Bullet center: " + _collider.bounds.center  + " hitbox center: " + hitbox.bounds.center + " intersect point: " + hit.point + " distance= " + raycastDistance);
-            //Vector2 contactPoint = new Vector2(hitbox.bounds.center.x + hitbox.bounds.extents.x, hit.point.y);
             Vector2 contactPoint = hit.point;
 
             Bullet bullet = collider.gameObject.GetComponent<Bullet>();
+            // do not reflect the same bullet that already damaged us
+            // instead, destroy it (return the object back to pool)
+            if (bullet != null && tookDamageFromBulletList.ContainsKey(bullet.gameObject.GetInstanceID()))
+            {
+                // TODO: destroy/return this bullet to pool
+                continue;
+            }
+            // do not bounce the same bullet more than once if we managed to reflect it back
             if (bullet != null && !bullet.bounced)
             {
-                float bouncingAngle = CalculateBounceAngle(contactPoint, hitbox);
-                bullet.SetVelocity(bouncingAngle);
+                float bouncingAngle = GetBounceAngle(contactPoint, hitbox);
+                bullet.Bounce(bouncingAngle);
+                deflectedBulletList.Add(bullet.gameObject.GetInstanceID(), 1);
             }
         }
-        incomingBulletList.Clear();
+    }
+
+    public void TakeDamage(float damage, int bulletId)
+    {
+        // do not take damage if the bullet has been deflected
+        if (deflectedBulletList.ContainsKey(bulletId))
+            return;
+
+        _currentHitpoint -= damage;
+        tookDamageFromBulletList.Add(bulletId,1);
+        StartCoroutine(_IndicateBeingDamaged());
+
+        if (_currentHitpoint <= 0 && !_isDead)
+        {
+            _isDead = true;
+            _currentHitpoint = 0f;
+        }
+        deflectedBulletList.Clear();
     }
 
     void CalculateRaySpacing(Collider2D hitbox)
@@ -164,10 +193,22 @@ public class Player : MonoBehaviour {
         horizontalRaySpacing = (bounds.size.y - 2 * skinWidth) / (horizontalRayCount - 1);
     }
 
-    float CalculateBounceAngle(Vector2 contactPoint, Collider2D hitbox)
+    float GetBounceAngle(Vector2 contactPoint, Collider2D hitbox)
     {
         float bounceAngle = Random.Range(10.5f, 30f);
-        Debug.Log("original bounce angle: " + bounceAngle);
         return bounceAngle;
+    }
+
+    IEnumerator _IndicateBeingDamaged()
+    {
+        Color red = new Color32(0xFF, 0x78, 0x78, 0xFF);
+        Color zeroAlpha = new Color32(0xFF, 0xFF, 0xFF, 0xFF);
+        int flashTime = 3;
+        for (int i = 0; i < flashTime; i++)
+        {
+            _spriteRenderer.color = red;
+            yield return new WaitForSeconds(0.1f);
+            _spriteRenderer.color = zeroAlpha;
+        }
     }
 }
