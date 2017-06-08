@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttackBehaviour : StateMachineBehaviour {
+public class AttackBehaviour : StateMachineBehaviour
+{
     Player player;
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         player = Player.Instance;
+
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -28,9 +30,9 @@ public class AttackBehaviour : StateMachineBehaviour {
             Collider2D enemyCollider = kvp.Value;
             enemyCollider.gameObject.GetComponent<Enemy>();
         }
-        player.incomingBulletList.Clear();
-        player.tookDamageFromBulletList.Clear();
-        player.deflectedBulletList.Clear();
+        player.incomingProjectileList.Clear();
+        player.tookDamageFromProjectileList.Clear();
+        player.deflectedProjectileList.Clear();
         player.damagedEnemyList.Clear();
     }
 }

@@ -18,18 +18,13 @@ public class JumpBehaviour : StateMachineBehaviour {
             animator.SetBool("land", true);
             animator.SetBool("jump", false);
         }
-
-   
-        if (Mathf.Abs(Player.Instance.velocity.y) <= 0.2f)
-        {
-            animator.SetBool("jump", false);
-        }
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         Player.Instance.Jump = false;
+        animator.SetBool("jump", false);
     }
 
 }

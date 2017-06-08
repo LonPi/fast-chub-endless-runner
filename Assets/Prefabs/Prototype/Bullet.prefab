@@ -54,14 +54,14 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 0.0001
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!58 &58059439349267368
 CircleCollider2D:
@@ -89,9 +89,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 082203047efbe074ba62d72daa606902, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 20
-  upwardThrust: 2
-  damage: 5
+  moveSpeed: 10
 --- !u!212 &212507135248780898
 SpriteRenderer:
   m_ObjectHideFlags: 1
