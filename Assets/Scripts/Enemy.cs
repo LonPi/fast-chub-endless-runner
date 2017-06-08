@@ -11,44 +11,36 @@ public class Enemy : MonoBehaviour {
     float direction = -1;
     Rigidbody2D _rb2D;
     bool isFacingRight;
-    float randomInterval;
-    float attackTimer;
+    float randomIdleInterval;
+    float timer;
     float curHitpoints;
     Animator _animator;
-    bool _wasVisible;
 
     void Start () {
         _rb2D = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         isFacingRight = true;
-        attackTimer = 0f;
+        timer = 0f;
         relativeSpeedToGround = direction * (Player.Instance.relativeSpeedToGround + moveSpeed);
         curHitpoints = maxHitpoints;
-        GenerateRandomAttackInterval();
-	}
+        GenerateRandomIdleInterval();
+    }
 
     void Update ()
     {
-        Move();
-        Attack();
+        timer += Time.deltaTime;
+        if (timer >= randomIdleInterval)
+        {
+            Attack();
+            timer = 0f;
+            GenerateRandomIdleInterval();
+        }
     }
 
     void Attack()
     {
-        attackTimer += Time.deltaTime;
-        if (attackTimer >= randomInterval)
-        {
-            _animator.SetTrigger("attack");
-            GameObject obj = Instantiate(Bullet, transform.position, Quaternion.identity);
-            attackTimer = 0f;
-            GenerateRandomAttackInterval();
-        }
-    }
-
-    void Move()
-    {
-        _rb2D.velocity = new Vector2(relativeSpeedToGround, _rb2D.velocity.y);
-        Flip();
+        _animator.SetTrigger("attack");
+        GameObject obj = Instantiate(Bullet, transform.position, Quaternion.identity);
     }
 
     public void SetParams(float moveSpeed)
@@ -61,9 +53,9 @@ public class Enemy : MonoBehaviour {
         this.curHitpoints -= _damage;
     }
 
-    void GenerateRandomAttackInterval()
+    void GenerateRandomIdleInterval()
     {
-        randomInterval = Random.Range(minAttackInterval - 0.01f, maxAttackInterval - 0.01f);
+        randomIdleInterval = Random.Range(minAttackInterval - 0.01f, maxAttackInterval - 0.01f);
     }
 
     void Flip()

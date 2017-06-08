@@ -12,7 +12,8 @@ public class Bullet : MonoBehaviour {
     int _layerMask;
     bool hitPlayer;
 
-    void Start () {
+    void Start ()
+    {
         targetPosition = Player.Instance.transform.position;
         direction = new Vector2(targetPosition.x - transform.position.x, targetPosition.y - transform.position.y);
         _circleCollider = GetComponent<CircleCollider2D>();
@@ -40,11 +41,18 @@ public class Bullet : MonoBehaviour {
     void DetectHit()
     {
         Bounds bounds = _circleCollider.bounds;
-        Collider2D hit = Physics2D.OverlapCircle(bounds.center, _circleCollider.radius, _layerMask);
+        float radius = Mathf.Abs(_circleCollider.radius * transform.localScale.x);
+        Collider2D hit = Physics2D.OverlapCircle(bounds.center, radius, _layerMask);
+        Debug.Log(radius);
+        Debug.DrawLine(bounds.center, new Vector2(bounds.center.x + radius, bounds.center.y + radius), Color.magenta);
         // make sure player's hurtbox is hit and not their feet collider for example
-        if (hit && hit.transform.parent.name == "Hurtbox" && !bounced)
+        if (hit && hit.gameObject.tag != "Player")
+            return;
+
+        if (hit && hit.gameObject.transform.parent != null && hit.gameObject.transform.parent.name == "Hurtbox" && !bounced)
         {
             hitPlayer = true;
+            Debug.Log("hit registered");
             Player.Instance.TakeDamage(this.damage, gameObject.GetInstanceID());
         }
     }

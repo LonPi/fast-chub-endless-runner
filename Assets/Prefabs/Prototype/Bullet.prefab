@@ -61,7 +61,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 1
+  m_CollisionDetection: 0
   m_Constraints: 4
 --- !u!58 &58059439349267368
 CircleCollider2D:
@@ -90,6 +90,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 20
+  upwardThrust: 2
+  damage: 5
 --- !u!212 &212507135248780898
 SpriteRenderer:
   m_ObjectHideFlags: 1

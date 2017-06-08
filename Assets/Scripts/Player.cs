@@ -26,6 +26,7 @@ public class Player : MonoBehaviour {
     public Dictionary<int, Collider2D> incomingBulletList = new Dictionary<int, Collider2D>();
     public Dictionary<int, int> deflectedBulletList = new Dictionary<int, int>();
     public Dictionary<int, int> tookDamageFromBulletList = new Dictionary<int, int>();
+
     // private variables
     int horizontalRayCount = 7, verticalRayCount = 7;
     float skinWidth = .015f;
@@ -40,9 +41,6 @@ public class Player : MonoBehaviour {
     bool secondJumpAvailable, canJump;
     bool _isDead;
     int _layerMask;
-    bool _tookDamageFromBulletPreviously, _deflectedBullet;
-    int _tookDamageFromBulletID, _deflectedBulletID;
-    
 
 	void Start ()
     {
@@ -52,7 +50,6 @@ public class Player : MonoBehaviour {
         relativeSpeedToGround = GameObject.Find("Ground").GetComponent<Parallax>().scrollingSpeed;
         _layerMask = 1 << LayerMask.NameToLayer("Enemy");
         _currentHitpoint = maxHitpoints;
-        _deflectedBullet = _tookDamageFromBulletPreviously = false;
     }
 	
 	void Update ()
@@ -63,6 +60,10 @@ public class Player : MonoBehaviour {
             _velocity.y = 0f;
         }
         HandleInput();
+    }
+
+    private void FixedUpdate()
+    {
         _velocity.y += gravity * Time.deltaTime;
         Vector2 deltaMovement = _velocity * Time.deltaTime;
         _playerController.Move(ref deltaMovement);
@@ -98,7 +99,8 @@ public class Player : MonoBehaviour {
             {
                 _animator.SetBool("jump", true);
                 _animator.SetBool("onGround", false);
-                transform.position = new Vector2(transform.position.x, transform.position.y + jumpHeight);
+                _velocity.y = jumpHeight;
+                //_playerController.Move(ref deltaMovement);
             }
         }
     }
@@ -126,6 +128,9 @@ public class Player : MonoBehaviour {
         // register hits on a bunch of bullets
         Collider2D[] hits = Physics2D.OverlapAreaAll(bounds.min, bounds.max, _layerMask);
 
+        // populate list 
+        // make sure that each enemy receive one damage instance per attack frame
+        // make sure that each bullet only get 
         foreach(Collider2D _collider in hits)
         {
             int instanceID = _collider.transform.root.GetInstanceID();
@@ -203,12 +208,14 @@ public class Player : MonoBehaviour {
     {
         Color red = new Color32(0xFF, 0x78, 0x78, 0xFF);
         Color zeroAlpha = new Color32(0xFF, 0xFF, 0xFF, 0xFF);
-        int flashTime = 3;
+        int flashTime = 5;
         for (int i = 0; i < flashTime; i++)
         {
             _spriteRenderer.color = red;
             yield return new WaitForSeconds(0.1f);
             _spriteRenderer.color = zeroAlpha;
+            yield return new WaitForSeconds(0.1f);
+
         }
     }
 }
