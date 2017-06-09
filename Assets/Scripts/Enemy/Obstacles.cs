@@ -5,36 +5,60 @@ using UnityEngine;
 public class Obstacles : MonoBehaviour {
 
     public float moveSpeed;
-    float direction = -1f;
     float relativeSpeedToGround;
+    bool dodged;
+    BoxCollider2D _boxCollider;
 
-    Rigidbody2D _rb2D;
-
-	void Start () {
-        _rb2D = GetComponent<Rigidbody2D>();
+	void Start ()
+    {
+        dodged = false;
+        _boxCollider = GetComponent<BoxCollider2D>();
     }
 
     void Update ()
     {
-        relativeSpeedToGround = direction * (Player.Instance.relativeSpeedToGround + moveSpeed);
+        if (!InCameraView())
+            PoolManager.instance.ReturnObjectToPool(gameObject);
+
+        relativeSpeedToGround = -1 * (Player.Instance.relativeSpeedToGround + moveSpeed);
         if (Player.Instance.PlayerDeath())
-            relativeSpeedToGround = 0;
+            relativeSpeedToGround = 0f;
         transform.Translate(new Vector2(relativeSpeedToGround, 0f) * Time.deltaTime);
+        if (Player.Instance.transform.position.x > transform.position.x && !dodged)
+        {
+            Player.Instance.StatTracker("obstacleDodge");
+            dodged = true;
+        }
     }
 
-    public void SetParams(float moveSpeed)
+    public void SetParams(Vector2 position)
     {
-        this.moveSpeed = moveSpeed;
+        transform.position = position;
+        if (_boxCollider != null)
+        {
+            _boxCollider.enabled = true;
+        }
+
+    }
+
+    bool InCameraView()
+    {
+        Vector3 screenPoint = Player.Instance._cameraRef.WorldToViewportPoint(transform.position);
+        bool onScreen = screenPoint.x > 0 && screenPoint.y > 0 && screenPoint.y < 1;
+        return onScreen;
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Player")
+        if (collision.gameObject.tag == "Player" && collision.collider is BoxCollider2D)
         {
             Vector3 contactPoint = collision.contacts[0].point;
 
-            if (collision.collider.bounds.min.y < this.GetComponent<Collider2D>().bounds.max.y)
+            if (collision.collider.bounds.center.y < this.GetComponent<Collider2D>().bounds.max.y)
+            {
                 Player.Instance.KnockObstacle();
+            }
+            
         }
     }
 }

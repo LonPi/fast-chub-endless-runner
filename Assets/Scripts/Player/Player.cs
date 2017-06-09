@@ -5,8 +5,7 @@ using UnityEngine.Assertions;
 
 public class Player : MonoBehaviour
 {
-
-    public float jumpHeight, maxHitpoints;
+    public float jumpHeight, maxHitpoints, damage;
     private static Player instance;
     public static Player Instance
     {
@@ -27,21 +26,27 @@ public class Player : MonoBehaviour
     public Dictionary<int, Collider2D> incomingProjectileList = new Dictionary<int, Collider2D>();
     public Dictionary<int, int> deflectedProjectileList = new Dictionary<int, int>();
     public Dictionary<int, int> tookDamageFromProjectileList = new Dictionary<int, int>();
-
+    // TODO: put in game manager
+    public Camera _cameraRef { get; set; }
     // private variables
-    int horizontalRayCount = 7, verticalRayCount = 7;
-    float skinWidth = .015f;
-    float verticalRaySpacing, horizontalRaySpacing;
     Animator _animator;
     Vector2 _velocity;
     PlayerController _playerController;
     BoxCollider2D hitbox;
     SpriteRenderer _spriteRenderer;
+    Parallax _parallaxScript;
     float gravity = -20f;
     float _currentHitpoint;
     bool secondJumpAvailable, canJump;
     bool _isDead;
     int _layerMask;
+    float _distance = 0f;
+    float _score = 0f;
+    float _killCount = 0f;
+    float _obstacleDodgeCount = 0f;
+    float _enemyDodgeCount = 0f;
+    float _projectileDodgeCount = 0f;
+    float _projectileBlockCount = 0f;
 
     void Start()
     {
@@ -50,11 +55,13 @@ public class Player : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _layerMask = 1 << LayerMask.NameToLayer("Enemy");
         _currentHitpoint = maxHitpoints;
+        _parallaxScript = GameObject.Find("Ground").GetComponent<Parallax>();
+        _cameraRef = GameObject.Find("Main Camera").GetComponent<Camera>();
     }
 
     void Update()
     {
-        relativeSpeedToGround = GameObject.Find("Ground").GetComponent<Parallax>().scrollingSpeed;
+        relativeSpeedToGround = _parallaxScript.scrollingSpeed;
         var collisionInfo = _playerController.collisionInfo;
         if (collisionInfo.below || collisionInfo.above)
         {
@@ -63,16 +70,9 @@ public class Player : MonoBehaviour
         HandleInput();
         _velocity.y += gravity * Time.deltaTime;
         Vector2 deltaMovement = _velocity * Time.deltaTime;
-        _playerController.Move(ref deltaMovement);
-    }
-
-    private void LateUpdate()
-    {
-
-    }
-    private void FixedUpdate()
-    {
-        
+        if (!_isDead) _playerController.Move(ref deltaMovement);
+        _distance += relativeSpeedToGround * Time.deltaTime / 2;
+        _score += relativeSpeedToGround * Time.deltaTime / 2;
     }
 
     void HandleInput()
@@ -80,7 +80,6 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.A))
         {
             _animator.SetTrigger("attack");
-            //GameObject.Find("Main Camera").GetComponent<CameraShake>().Shake(0.1f, 0.1f);
         }
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -107,7 +106,6 @@ public class Player : MonoBehaviour
                 _animator.SetBool("jump", true);
                 _animator.SetBool("onGround", false);
                 _velocity.y = jumpHeight;
-                //_playerController.Move(ref deltaMovement);
             }
         }
     }
@@ -130,8 +128,6 @@ public class Player : MonoBehaviour
 
         Assert.IsNotNull(hitbox);
         Bounds bounds = hitbox.bounds;
-        Vector2 bottomLeft = transform.TransformPoint(bounds.min);
-        Vector2 topRight = transform.TransformPoint(bounds.max);
         // register hits on a bunch of bullets
         Collider2D[] hits = Physics2D.OverlapAreaAll(bounds.min, bounds.max, _layerMask);
 
@@ -141,12 +137,12 @@ public class Player : MonoBehaviour
         foreach (Collider2D _collider in hits)
         {
             int instanceID = _collider.transform.root.GetInstanceID();
-
-            if (_collider.transform.root.tag == "Enemy" && !damagedEnemyList.ContainsKey(instanceID))
+            
+            if (_collider.transform.parent.parent != null && _collider.transform.parent.parent.tag == "Enemy" && !damagedEnemyList.ContainsKey(instanceID))
             {
                 damagedEnemyList.Add(instanceID, _collider);
             }
-            if (_collider.transform.root.tag == "Projectile" && !incomingProjectileList.ContainsKey(instanceID))
+            if (_collider.gameObject.tag == "Projectile" && !incomingProjectileList.ContainsKey(instanceID))
             {
                 incomingProjectileList.Add(instanceID, _collider);
             }
@@ -163,20 +159,20 @@ public class Player : MonoBehaviour
             RaycastHit2D hit = Physics2D.Raycast(collider.bounds.center, raycastDirection, raycastDistance, _layerMask);
             Vector2 contactPoint = hit.point;
 
-            Projectile bullet = collider.gameObject.GetComponent<Projectile>();
+            Projectile projectile = collider.gameObject.GetComponent<Projectile>();
             // do not reflect the same bullet that already damaged us
             // instead, destroy it (return the object back to pool)
-            if (bullet != null && tookDamageFromProjectileList.ContainsKey(bullet.gameObject.GetInstanceID()))
+            if (projectile != null && tookDamageFromProjectileList.ContainsKey(projectile.gameObject.GetInstanceID()))
             {
                 // TODO: destroy/return this bullet to pool
                 continue;
             }
             // do not bounce the same bullet more than once if we managed to reflect it back
-            if (bullet != null && !bullet.bounced)
+            if (projectile != null && !projectile.bounced)
             {
                 float bouncingAngle = GetBounceAngle(contactPoint, hitbox);
-                bullet.Bounce(bouncingAngle);
-                deflectedProjectileList.Add(bullet.gameObject.GetInstanceID(), 1);
+                projectile.Bounce(bouncingAngle);
+                deflectedProjectileList.Add(projectile.gameObject.GetInstanceID(), 1);
             }
         }
     }
@@ -196,13 +192,6 @@ public class Player : MonoBehaviour
             _currentHitpoint = 0f;
         }
         deflectedProjectileList.Clear();
-    }
-
-    void CalculateRaySpacing(Collider2D hitbox)
-    {
-        Bounds bounds = hitbox.bounds;
-        verticalRaySpacing = (bounds.size.x - 2 * skinWidth) / (verticalRayCount - 1);
-        horizontalRaySpacing = (bounds.size.y - 2 * skinWidth) / (horizontalRayCount - 1);
     }
 
     float GetBounceAngle(Vector2 contactPoint, Collider2D hitbox)
@@ -229,10 +218,52 @@ public class Player : MonoBehaviour
     public void KnockObstacle()
     {
         _isDead = true;
+        _animator.SetTrigger("dead");
     }
 
     public bool PlayerDeath()
     {
         return _isDead;
+    }
+
+    public void StatTracker(string statType)
+    {
+        if (statType == "killCount")
+        {
+            _killCount++;
+            _score += 10f;
+        }
+        if (statType == "obstacleDodge")
+        {
+            _obstacleDodgeCount++;
+            _score += 10f;
+        }
+        if (statType == "projectileDodge")
+        {
+            _projectileDodgeCount++;
+            _score += 10f;
+        }
+        if (statType == "enemyDodge")
+        {
+            _enemyDodgeCount++;
+            _score += 10f;
+        }
+        if (statType == "projectileBlock")
+        {
+            _projectileBlockCount++;
+            _score += 10f;
+        }
+    }
+
+    public float GetStats(string statType)
+    {
+        if (statType == "score") return _score;
+        else if (statType == "distance") return _distance;
+        else if (statType == "killCount") return _killCount;
+        else if (statType == "obstacleDodge") return _obstacleDodgeCount;
+        else if (statType == "projectileDodge") return _projectileDodgeCount;
+        else if (statType == "enemyDodge") return _enemyDodgeCount;
+        else if (statType == "projectileBlock") return _projectileBlockCount;
+        else return 0;
     }
 }

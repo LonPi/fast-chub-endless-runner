@@ -35,8 +35,6 @@ public class PlayerController : MonoBehaviour
     {
         CalculateRaySpacing();
         CalculateRaycastOrigins();
-
-
     }
 
     void CalculateRaycastOrigins()
