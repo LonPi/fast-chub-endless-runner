@@ -37,7 +37,7 @@ public class Player : MonoBehaviour
     PlayerController _playerController;
     BoxCollider2D hitbox;
     SpriteRenderer _spriteRenderer;
-    float gravity = 0f;
+    float gravity = -20f;
     float _currentHitpoint;
     bool secondJumpAvailable, canJump;
     bool _isDead;
@@ -188,7 +188,6 @@ public class Player : MonoBehaviour
             return;
         _currentHitpoint -= damage;
         tookDamageFromProjectileList.Add(bulletId, 1);
-        Debug.Break();
         StartCoroutine(_IndicateBeingDamaged());
 
         if (_currentHitpoint <= 0 && !_isDead)

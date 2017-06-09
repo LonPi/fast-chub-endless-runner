@@ -10,6 +10,7 @@ public class AttackBehaviour : StateMachineBehaviour
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         player = Player.Instance;
+        Debug.LogError("calling attack behaviour");
 
     }
 

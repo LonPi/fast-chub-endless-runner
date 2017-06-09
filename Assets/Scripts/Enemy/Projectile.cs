@@ -11,9 +11,11 @@ public class Projectile : MonoBehaviour
     CircleCollider2D _circleCollider;
     int _layerMask;
     bool hitPlayer;
+    bool debug = false;
 
     // kinematic equation variables
-    float gravity = -3f;
+    //float gravity = -3f;
+    public float gravity = -20f;
     Vector2 _velocity;
 
     void Start()
@@ -36,31 +38,26 @@ public class Projectile : MonoBehaviour
         {
             DetectHit();
         }
-        if (!bounced)
+        if (debug)
         {
-            //gravity = -10f;
+            Debug.Log(_velocity);
         }
-
         _velocity.y += gravity * Time.deltaTime;
         transform.position += (Vector3)_velocity * Time.deltaTime;
     }
+
     void CalculateInitialVelocity()
     {
-        /** horizontal component  **/
-        // the horizontal distance between player and this projectile
-        float distanceToTravel = Mathf.Abs(targetPosition.x - transform.position.x)/2;
-        Debug.Log(distanceToTravel);
-        // the time required to travel this distance
-        float timeToTravel = distanceToTravel / moveSpeed;
-        
+        float distanceToTravel, timeToTravel, initialVelocity_y, height;
 
-        /** vertical component **/
-        // use v = u + at, calculate u given that v = 0
-        float initialVelocity_y = 0 - gravity * timeToTravel;
+        distanceToTravel = Mathf.Abs(targetPosition.x - transform.position.x);
+        timeToTravel = distanceToTravel / moveSpeed;
+        height = Mathf.Abs(targetPosition.y - transform.position.y);
+        initialVelocity_y = (height - 0.5f * gravity * Mathf.Pow(timeToTravel, 2)) / timeToTravel;
 
         // set initial velocity
         _velocity = new Vector2(direction * moveSpeed, initialVelocity_y);
-        Debug.Log(_velocity);
+        Debug.Log("distance: " + distanceToTravel + " height: " + height + "initial velocity: " + initialVelocity_y);
     }
 
     void DetectHit()
@@ -77,6 +74,8 @@ public class Projectile : MonoBehaviour
         {
             hitPlayer = true;
             Debug.Log("hit registered");
+            Debug.Log(_velocity);
+            debug = true;
             Player.Instance.TakeDamage(this.damage, gameObject.GetInstanceID());
         }
     }
