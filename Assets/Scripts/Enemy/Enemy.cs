@@ -15,11 +15,11 @@ public class Enemy : MonoBehaviour
     float curHitpoints;
     float gravity = -20f;
     Animator _animator;
-    Parallax _parallaxScript;
     EnemyController _enemyController;
     Vector2 _velocity;
     bool _isDead;
     bool wasInCameraView;
+    bool dodged;
 
     void Start()
     {
@@ -27,12 +27,12 @@ public class Enemy : MonoBehaviour
         _animator = GetComponent<Animator>();
         _enemyController = GetComponent<EnemyController>();
         isFacingRight = true;
-        _parallaxScript = GameObject.Find("Ground").GetComponent<Parallax>();
         timer = 0f;
         curHitpoints = maxHitpoints;
         GenerateRandomIdleInterval();
         _isDead = false;
         wasInCameraView = false;
+        dodged = false;
     }
 
     void Update()
@@ -62,11 +62,16 @@ public class Enemy : MonoBehaviour
 
         _velocity.y += gravity;
         Vector2 deltaMovement = _velocity * Time.deltaTime;
-        relativeSpeedToGround = _parallaxScript.scrollingSpeed;
+        relativeSpeedToGround = GameManager.instance._parallaxRef.scrollingSpeed;
         // move the same speed with scrolling ground
         transform.Translate(new Vector2(relativeSpeedToGround * -1, 0f) * Time.deltaTime);
         _enemyController.CollideOnGround(ref deltaMovement);
 
+        if (Player.Instance.transform.position.x > transform.position.x && !dodged)
+        {
+            Player.Instance.StatTracker("enemyDodge");
+            dodged = true;
+        }
     }
 
     void Attack()
@@ -86,7 +91,7 @@ public class Enemy : MonoBehaviour
 
     bool InCameraView()
     {
-        Vector3 screenPoint = Player.Instance._cameraRef.WorldToViewportPoint(transform.position);
+        Vector3 screenPoint = GameManager.instance._cameraRef.WorldToViewportPoint(transform.position);
         bool onScreen = screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1;
         return onScreen;
     }
@@ -95,11 +100,11 @@ public class Enemy : MonoBehaviour
     {
         this.curHitpoints -= _damage;
 
-        if (curHitpoints <= 0)
+        if (curHitpoints <= 0 && !_isDead)
         {
             curHitpoints = 0;
             _isDead = true;
-            
+            Player.Instance.StatTracker("killCount");
         }
     }
 
@@ -109,7 +114,7 @@ public class Enemy : MonoBehaviour
         _isDead = false;
         curHitpoints = maxHitpoints;
         if (_animator)
-            _animator.SetBool("isDead", false);
+            _animator.SetBool("dead", false);
         wasInCameraView = false;
     }
 

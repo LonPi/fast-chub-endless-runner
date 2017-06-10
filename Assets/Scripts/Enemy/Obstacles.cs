@@ -43,7 +43,7 @@ public class Obstacles : MonoBehaviour {
 
     bool InCameraView()
     {
-        Vector3 screenPoint = Player.Instance._cameraRef.WorldToViewportPoint(transform.position);
+        Vector3 screenPoint = GameManager.instance._cameraRef.WorldToViewportPoint(transform.position);
         bool onScreen = screenPoint.x > 0 && screenPoint.y > 0 && screenPoint.y < 1;
         return onScreen;
     }
@@ -57,6 +57,7 @@ public class Obstacles : MonoBehaviour {
             if (collision.collider.bounds.center.y < this.GetComponent<Collider2D>().bounds.max.y)
             {
                 Player.Instance.KnockObstacle();
+                GetComponent<BoxCollider2D>().enabled = false;
             }
             
         }

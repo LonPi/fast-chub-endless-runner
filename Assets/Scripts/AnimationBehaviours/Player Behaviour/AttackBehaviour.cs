@@ -26,7 +26,7 @@ public class AttackBehaviour : StateMachineBehaviour
         // Apply damage value to enemies
         foreach (KeyValuePair<int, Collider2D> kvp in player.damagedEnemyList)
         {
-            Debug.Log("Player: Applying damage to " + kvp.Key + " " + kvp.Value.name);
+            //Debug.Log("Player: Applying damage to " + kvp.Key + " " + kvp.Value.name);
             Collider2D enemyCollider = kvp.Value;
             enemyCollider.gameObject.transform.parent.parent.GetComponent<Enemy>().TakeDamage(Player.Instance.damage);
         }

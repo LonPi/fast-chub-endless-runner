@@ -18,6 +18,8 @@ public class EnemyGenerator : MonoBehaviour {
     void Update()
     {
         timer += Time.deltaTime;
+        if (minInterval > 0.5f) minInterval -= 0.02f * Time.deltaTime;
+        if (maxInterval > minInterval + 0.5f) maxInterval -= 0.02f * Time.deltaTime;
 
         if (timer >= randomInterval && !Player.Instance.PlayerDeath())
         {

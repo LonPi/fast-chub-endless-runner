@@ -12,7 +12,7 @@ public class KillCount : MonoBehaviour {
 	}
 	
 	void Update () {
-        killCount += Mathf.RoundToInt(Player.Instance.GetStats("killCount"));
+        killCount = Mathf.RoundToInt(Player.Instance.GetStats("killCount"));
         killCountText.text = "Kill Count: " + killCount.ToString();
     }
 }

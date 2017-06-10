@@ -26,8 +26,6 @@ public class Player : MonoBehaviour
     public Dictionary<int, Collider2D> incomingProjectileList = new Dictionary<int, Collider2D>();
     public Dictionary<int, int> deflectedProjectileList = new Dictionary<int, int>();
     public Dictionary<int, int> tookDamageFromProjectileList = new Dictionary<int, int>();
-    // TODO: put in game manager
-    public Camera _cameraRef { get; set; }
     // private variables
     Animator _animator;
     Vector2 _velocity;
@@ -55,13 +53,11 @@ public class Player : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _layerMask = 1 << LayerMask.NameToLayer("Enemy");
         _currentHitpoint = maxHitpoints;
-        _parallaxScript = GameObject.Find("Ground").GetComponent<Parallax>();
-        _cameraRef = GameObject.Find("Main Camera").GetComponent<Camera>();
     }
 
     void Update()
     {
-        relativeSpeedToGround = _parallaxScript.scrollingSpeed;
+        relativeSpeedToGround = GameManager.instance._parallaxRef.scrollingSpeed;
         var collisionInfo = _playerController.collisionInfo;
         if (collisionInfo.below || collisionInfo.above)
         {
@@ -70,7 +66,7 @@ public class Player : MonoBehaviour
         HandleInput();
         _velocity.y += gravity * Time.deltaTime;
         Vector2 deltaMovement = _velocity * Time.deltaTime;
-        if (!_isDead) _playerController.Move(ref deltaMovement);
+        _playerController.Move(ref deltaMovement);
         _distance += relativeSpeedToGround * Time.deltaTime / 2;
         _score += relativeSpeedToGround * Time.deltaTime / 2;
     }
@@ -189,6 +185,7 @@ public class Player : MonoBehaviour
         if (_currentHitpoint <= 0 && !_isDead)
         {
             _isDead = true;
+            GameManager.instance.ReloadLevel();
             _currentHitpoint = 0f;
         }
         deflectedProjectileList.Clear();

@@ -9,6 +9,7 @@ public class Projectile : MonoBehaviour
     Vector2 targetPosition;
     int _layerMask;
     bool hitPlayer;
+    bool dodged;
 
     // kinematic equation variables
     //float gravity = -3f;
@@ -22,6 +23,7 @@ public class Projectile : MonoBehaviour
         hitPlayer = false;
         _layerMask = 1 << LayerMask.NameToLayer("Player");
         CalculateInitialVelocity();
+        dodged = false;
     }
 
     void Update()
@@ -33,6 +35,11 @@ public class Projectile : MonoBehaviour
             {
                 Player.Instance.tookDamageFromProjectileList.Remove(gameObject.GetInstanceID());
             }
+        }
+        if (Player.Instance.transform.position.x > transform.position.x && !dodged)
+        {
+            Player.Instance.StatTracker("projectileDodge");
+            dodged = true;
         }
     }
 
@@ -48,7 +55,7 @@ public class Projectile : MonoBehaviour
 
     bool InCameraView()
     {
-        Vector3 screenPoint = Player.Instance._cameraRef.WorldToViewportPoint(transform.position);
+        Vector3 screenPoint = GameManager.instance._cameraRef.WorldToViewportPoint(transform.position);
         bool onScreen = screenPoint.x > 0 && screenPoint.y > 0 && screenPoint.y < 1;
         return onScreen;
     }
@@ -112,12 +119,13 @@ public class Projectile : MonoBehaviour
     {
         float velocityMagnitude = _velocity.magnitude;
         transform.rotation = Quaternion.Euler(0, 0, bouncingAngle - 180f);
-        Debug.Log("before bounce: " + _velocity);
+        //Debug.Log("before bounce: " + _velocity);
         this._velocity.y = initialVelocity_y;
         this._velocity.x *= -1;
         this._velocity.x -= Player.Instance.relativeSpeedToGround;
         //this._velocity.y = Mathf.Sin(bouncingAngle * Mathf.Deg2Rad) * velocityMagnitude;
         //this._velocity.x = Mathf.Cos(bouncingAngle * Mathf.Deg2Rad) * velocityMagnitude;
         this.bounced = true;
+        Player.Instance.StatTracker("projectileBlock");
     }
 }

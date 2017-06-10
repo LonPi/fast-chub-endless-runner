@@ -13,7 +13,7 @@ public class Timer : MonoBehaviour {
 	}
 	
 	void Update () {
-        time += Time.deltaTime;
+        if (!Player.Instance.PlayerDeath()) time += Time.deltaTime;
         var minutes = Mathf.Floor(time / 60f);
         var seconds = Mathf.Floor(time % 60f);
 
