@@ -6,37 +6,34 @@ public class SoundManager : MonoBehaviour
     public AudioSource 
         playerFxSource,
         enemyFxSource,
+        uiFxSource,
+        miscFxSource,
         musicSource;
     public AudioClip
-        jump,
-        defMagicBall,
-        defShuriken,
-        defArrow,
-        attack,
-        deadProjectile,
-        deadObstacle,
-        deadMage,
-        deadNinja,
-        deadArcher;
+        jumpAtk,
+        groundAtk,
+        deadCat,
+        deadBird,
+        explodeCat,
+        explodeBird,
+        knockTree,
+        highScore,
+        fastPace,
+        playerDead,
+        jump;
 
-    public static SoundManager instance = null;       
+    public static SoundManager Instance = null;       
     public float lowPitchRange = 0.95f;              
     public float highPitchRange = 1.05f;            
 
 
     void Awake()
     {
-        if (instance == null)
-            instance = this;
-        else if (instance != this)
+        if (Instance == null)
+            Instance = this;
+        else if (Instance != this)
             Destroy(gameObject);
         DontDestroyOnLoad(gameObject);
-    }
-
-    public void PlayerPlaySingle(AudioClip clip)
-    {
-        playerFxSource.clip = clip;
-        playerFxSource.Play();
     }
 
     public void PlayerPlayOneShot(AudioClip clip)
@@ -44,14 +41,18 @@ public class SoundManager : MonoBehaviour
         playerFxSource.PlayOneShot(clip);
     }
 
-    public void EnemyPlaySingle(AudioClip clip)
-    {
-        enemyFxSource.clip = clip;
-        enemyFxSource.Play();
-    }
-
     public void EnemyPlayOneShot(AudioClip clip)
     {
         enemyFxSource.PlayOneShot(clip);
+    }
+
+    public void UiPlayOneShot(AudioClip clip)
+    {
+        uiFxSource.PlayOneShot(clip);
+    }
+
+    public void MiscPlayOneShot(AudioClip clip)
+    {
+        miscFxSource.PlayOneShot(clip);
     }
 }

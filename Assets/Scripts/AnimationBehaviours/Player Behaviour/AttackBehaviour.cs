@@ -2,36 +2,34 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttackBehaviour : StateMachineBehaviour
-{
-    Player player;
+public class AttackBehaviour : StateMachineBehaviour {
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        player = Player.Instance;
-
+        if (Player.Instance.velocity.y == 0f)
+            SoundManager.Instance.PlayerPlayOneShot(SoundManager.Instance.groundAtk);
+        else
+            SoundManager.Instance.PlayerPlayOneShot(SoundManager.Instance.jumpAtk);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
-    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    {
-        player.LaunchAttack();
-        player.BounceOffBullet();
-    }
+    //override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+    //
+    //}
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
-    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    {
-        // Apply damage value to enemies
-        foreach (KeyValuePair<int, Collider2D> kvp in player.damagedEnemyList)
-        {
-            //Debug.Log("Player: Applying damage to " + kvp.Key + " " + kvp.Value.name);
-            Collider2D enemyCollider = kvp.Value;
-            enemyCollider.gameObject.transform.parent.parent.GetComponent<Enemy>().TakeDamage(Player.Instance.damage);
-        }
-        player.incomingProjectileList.Clear();
-        player.deflectedProjectileList.Clear();
-        player.damagedEnemyList.Clear();
-    }
+    //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+    //
+    //}
+
+    // OnStateMove is called right after Animator.OnAnimatorMove(). Code that processes and affects root motion should be implemented here
+    //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+    //
+    //}
+
+    // OnStateIK is called right after Animator.OnAnimatorIK(). Code that sets up animation IK (inverse kinematics) should be implemented here.
+    //override public void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex) {
+    //
+    //}
 }

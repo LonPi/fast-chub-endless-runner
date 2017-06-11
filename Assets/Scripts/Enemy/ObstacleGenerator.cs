@@ -58,11 +58,11 @@ public class ObstacleGenerator : MonoBehaviour {
         GameObject obstaclePrefab = ObstaclesToGenerate[randomIndex];
         GameObject obstacleObject = PoolManager.instance.GetObjectfromPool(obstaclePrefab);
         obstacleObject.transform.localScale = Vector3.one * Random.Range(minScale, maxScale);
+        //obstacleObject.transform.localScale = Vector3.one * 2f;
+        obstacleObject.GetComponent<Obstacles>().SetParams(transform.position);
         Bounds spriteBounds = obstacleObject.GetComponent<SpriteRenderer>().bounds;
         if (!ObstacleOverlap(spriteBounds))
         {
-             obstacleObject.GetComponent<Obstacles>().SetParams(transform.position);
-            //Instantiate(enemyClone, transform.position, Quaternion.identity);
             return true;
         }
         else
