@@ -81,7 +81,7 @@ public class Cat : MonoBehaviour {
         {
             if (collision.collider.gameObject.transform.parent != null && collision.collider.gameObject.transform.parent.name == "Hurtbox")
             {
-                Player.Instance.KnockObstacle();
+                Player.Instance.KnockObstacle("cat");
             }
             _animator.SetBool("dead", true);
             _boxCollider.enabled = false;

@@ -15,7 +15,7 @@ public class CameraFollow : MonoBehaviour
         if (target)
         {
             if (Player.Instance.PlayerDeath()) xCenter = 0f;
-            else xCenter = 0.8f;
+            else xCenter = 0.5f;
             transform.position = Vector3.Lerp(transform.position, target.position, 0.1f) + new Vector3(xCenter, 0.3f, -20f);
             transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, yMin, yMax), transform.position.z);
         }

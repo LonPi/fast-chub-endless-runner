@@ -7,8 +7,11 @@ public class BirdGenerator : MonoBehaviour {
     public GameObject[] enemiesToGenerate;
     public float minInterval, maxInterval;
 
-    float timer;
-    float randomInterval;
+    float timer,
+        randomInterval,
+        _minHeight = -1f,
+        _maxHeight = 1f;
+    Vector2 _birdSpawn;
 
     void Start()
     {
@@ -18,9 +21,8 @@ public class BirdGenerator : MonoBehaviour {
     void Update()
     {
         timer += Time.deltaTime;
-        if (minInterval > 0.5f) minInterval -= 0.02f * Time.deltaTime;
-        if (maxInterval > minInterval + 0.5f) maxInterval -= 0.02f * Time.deltaTime;
-
+        if (!Player.Instance.BirdHorde() && minInterval > 0.5f) minInterval -= 0.02f * Time.deltaTime;
+        if (!Player.Instance.BirdHorde() && maxInterval > minInterval + 0.5f) maxInterval -= 0.02f * Time.deltaTime;
         if (timer >= randomInterval && !Player.Instance.PlayerDeath())
         {
             InstantiateEnemyObjects();
@@ -31,7 +33,10 @@ public class BirdGenerator : MonoBehaviour {
 
     void GenerateRandomInterval()
     {
-        randomInterval = Random.Range(minInterval - 0.01f, maxInterval - 0.01f);
+        if (Player.Instance.BirdHorde())
+            randomInterval = 0.5f;
+        else
+            randomInterval = Random.Range(minInterval - 0.01f, maxInterval - 0.01f);
     }
 
     bool ObstacleOverlap(Bounds bounds)
@@ -40,7 +45,7 @@ public class BirdGenerator : MonoBehaviour {
         Collider2D[] hits = Physics2D.OverlapAreaAll(bounds.min, bounds.max, 1 << LayerMask.NameToLayer("Ground"));
         foreach(Collider2D _collider in hits)
         {
-            if (_collider.gameObject.tag == "Obstacle")
+            if (_collider.gameObject.tag == "Enemy")
             {
                 return true;
             }
@@ -51,12 +56,13 @@ public class BirdGenerator : MonoBehaviour {
    
     bool InstantiateEnemyObjects()
     {
+        _birdSpawn = new Vector2(transform.position.x, transform.position.y + Random.Range(_minHeight, _maxHeight));
         float minIndex = 0.01f;
         float maxIndex = enemiesToGenerate.Length - 0.01f;
         int randomIndex = (int)Mathf.Floor(Random.Range(minIndex, maxIndex));
         GameObject enemyPrefab = enemiesToGenerate[randomIndex];
         GameObject enemyObject = PoolManager.instance.GetObjectfromPool(enemyPrefab);
-        enemyObject.GetComponent<Bird>().SetParams(transform.position);
+        enemyObject.GetComponent<Bird>().SetParams(_birdSpawn);
         Bounds spriteBounds = enemyObject.GetComponent<SpriteRenderer>().bounds;
         if (!ObstacleOverlap(spriteBounds))
         {

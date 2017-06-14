@@ -10,15 +10,14 @@ public class Bird : MonoBehaviour {
     bool _dead;
     BoxCollider2D _boxCollider;
     Animator _animator;
-    float _minHeight = -2f;
-    float _maxHeight = 2f;
+
 
     void Start ()
     {
         _dodged = false;
         _boxCollider = GetComponent<BoxCollider2D>();
         _animator = GetComponent<Animator>();
-        transform.position = new Vector2(transform.position.x, transform.position.y + Random.Range(_minHeight, _maxHeight));
+        
     }
 
     void Update ()
@@ -66,7 +65,7 @@ public class Bird : MonoBehaviour {
         {
             if (collision.collider.transform.parent != null &&  collision.collider.transform.parent.name == "Hurtbox")
             {
-                Player.Instance.KnockObstacle();
+                Player.Instance.KnockObstacle("bird");
             }
             _animator.SetBool("dead", true);
             _boxCollider.enabled = false;

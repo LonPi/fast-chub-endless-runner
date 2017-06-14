@@ -41,10 +41,12 @@ public class GameManager : MonoBehaviour {
             highScore.highestBirdKill = Player.Instance.GetStats("birdKill");
         if (Player.Instance.GetStats("catKill") > highScore.highestCatKill)
             highScore.highestCatKill = Player.Instance.GetStats("catKill");
-        if (Player.Instance.GetStats("birdDodge") > highScore.highestBirdKill)
-            highScore.highestBirdKill = Player.Instance.GetStats("birdDodge");
+        if (Player.Instance.GetStats("birdDodge") > highScore.highestBirdDodged)
+            highScore.highestBirdDodged = Player.Instance.GetStats("birdDodge");
         if (Player.Instance.GetStats("catDodge") > highScore.highestCatDodged)
             highScore.highestCatDodged = Player.Instance.GetStats("catDodge");
+        if (Player.Instance.GetStats("obstacleDodge") > highScore.highestObstacleDodged)
+            highScore.highestObstacleDodged = Player.Instance.GetStats("obstacleDodge");
     }
 
     public void ReloadLevel()

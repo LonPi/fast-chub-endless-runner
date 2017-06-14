@@ -83,7 +83,11 @@ public class PoolManager : MonoBehaviour {
     {
         foreach (Transform child in transform)
         {
-            ReturnObjectToPool(child.gameObject);
+            // avoid adding multiple objects of the same instance id when reloading scene
+            if (child.gameObject.activeInHierarchy)
+            {
+                ReturnObjectToPool(child.gameObject);
+            }
         }
 
     }

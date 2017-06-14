@@ -59,7 +59,7 @@ public class Obstacles : MonoBehaviour {
         {
             if (collision.collider.bounds.center.y < this.GetComponent<Collider2D>().bounds.max.y)
             {
-                Player.Instance.KnockObstacle();
+                Player.Instance.KnockObstacle("tree");
                 // disable so that player will not get pushed up on top of the obstacle when they died
                 _boxCollider.enabled = false;
                 SoundManager.Instance.EnemyPlayOneShot(SoundManager.Instance.knockTree);
