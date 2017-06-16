@@ -13,13 +13,15 @@ public class Parallax : MonoBehaviour {
     {
         gapLength = Mathf.Abs(childLayers[0].position.x - childLayers[1].position.x);
         coveredDistance = 0f;
+        if (!Player.Instance.TutorialOn())
+            scrollingSpeed += 2f;
     }
 
-    private void Update()
+    void Update()
     {
         ScrollLeft();
         Stitch();
-        scrollingSpeed += 0.1f * Time.deltaTime;
+        scrollingSpeed += 0.1f * Time.smoothDeltaTime;
         if (Player.Instance.PlayerDeath()) scrollingSpeed = 0f;
     }
 
@@ -32,9 +34,9 @@ public class Parallax : MonoBehaviour {
     {
         for (int i = 0; i < childLayers.Length; i++)
         {
-            childLayers[i].Translate(Vector2.left * scrollingSpeed * Time.deltaTime);
+            childLayers[i].Translate(Vector2.left * scrollingSpeed * Time.smoothDeltaTime);
         }
-        coveredDistance += scrollingSpeed * Time.deltaTime;
+        coveredDistance += scrollingSpeed * Time.smoothDeltaTime;
     }
 
     void Stitch()

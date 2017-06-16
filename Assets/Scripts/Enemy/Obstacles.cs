@@ -30,8 +30,13 @@ public class Obstacles : MonoBehaviour {
             Player.Instance.StatTracker("obstacleDodge");
             dodged = true;
         }
+        
+    }
+
+    private void LateUpdate()
+    {
         relativeSpeedToGround = -1 * (Player.Instance.relativeSpeedToGround + moveSpeed);
-        transform.Translate(new Vector2(relativeSpeedToGround, 0f) * Time.deltaTime);
+        transform.Translate(new Vector2(relativeSpeedToGround, 0f) * Time.smoothDeltaTime);
     }
 
     public void SetParams(Vector2 position)

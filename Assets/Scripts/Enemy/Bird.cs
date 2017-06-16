@@ -31,8 +31,13 @@ public class Bird : MonoBehaviour {
             Player.Instance.StatTracker("birdDodge");
             _dodged = true;
         }
+        
+    }
+
+    private void LateUpdate()
+    {
         _relativeSpeedToGround = -1 * (Player.Instance.relativeSpeedToGround + moveSpeed);
-        transform.Translate(new Vector2(_relativeSpeedToGround, 0f) * Time.deltaTime);
+        transform.Translate(new Vector2(_relativeSpeedToGround, 0f) * Time.smoothDeltaTime);
     }
 
     public void SetParams(Vector2 position)

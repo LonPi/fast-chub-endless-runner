@@ -8,6 +8,7 @@ public class SoundManager : MonoBehaviour
         enemyFxSource,
         uiFxSource,
         miscFxSource,
+        buffFxSource,
         musicSource;
     public AudioClip
         jumpAtk,
@@ -20,7 +21,10 @@ public class SoundManager : MonoBehaviour
         highScore,
         fastPace,
         playerDead,
-        jump;
+        jump,
+        bubbleStart,
+        bubbleEnd,
+        summonHorde;
 
     public static SoundManager Instance = null;       
     public float lowPitchRange = 0.95f;              
@@ -54,5 +58,10 @@ public class SoundManager : MonoBehaviour
     public void MiscPlayOneShot(AudioClip clip)
     {
         miscFxSource.PlayOneShot(clip);
+    }
+
+    public void BuffPlayOneShot(AudioClip clip)
+    {
+        buffFxSource.PlayOneShot(clip);
     }
 }

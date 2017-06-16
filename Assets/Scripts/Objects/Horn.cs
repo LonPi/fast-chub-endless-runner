@@ -19,7 +19,7 @@ public class Horn : MonoBehaviour {
             PoolManager.instance.ReturnObjectToPool(gameObject);
         }
         _relativeSpeedToGround = -1 * (Player.Instance.relativeSpeedToGround + moveSpeed);
-        transform.Translate(new Vector2(_relativeSpeedToGround, 0f) * Time.deltaTime);
+        transform.Translate(new Vector2(_relativeSpeedToGround, 0f) * Time.smoothDeltaTime);
     }
 
     public void SetParams(Vector2 position)

@@ -15,7 +15,12 @@ public class ObstacleGenerator : MonoBehaviour {
     void Start ()
     {
         GenerateRandomInterval();
-	}
+        if (!Player.Instance.TutorialOn())
+        {
+            minInterval -= 1f;
+            maxInterval -= 1f;
+        }
+    }
 
     void Update ()
     {

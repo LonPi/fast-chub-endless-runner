@@ -8,6 +8,7 @@ public class BubbleBuffBehaviour : StateMachineBehaviour {
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         animator.SetBool("pop", true);
+        SoundManager.Instance.BuffPlayOneShot(SoundManager.Instance.bubbleEnd);
     }
 
 }

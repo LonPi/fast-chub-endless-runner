@@ -10,7 +10,6 @@ public class Cat : MonoBehaviour {
     bool _dodged;
     bool _dead;
     BoxCollider2D _boxCollider;
-    Rigidbody2D _rb2D;
     Animator _animator;
 
     void Start ()
@@ -19,7 +18,6 @@ public class Cat : MonoBehaviour {
         _dead = false;
         _boxCollider = GetComponent<BoxCollider2D>();
         _animator = GetComponent<Animator>();
-        _rb2D = GetComponent<Rigidbody2D>();
         _jumpHeight = 0f;
     }
 
@@ -44,10 +42,14 @@ public class Cat : MonoBehaviour {
             Player.Instance.StatTracker("catDodge");
             _dodged = true;
         }
-        _relativeSpeedToGround = -1 * (Player.Instance.relativeSpeedToGround + moveSpeed);
-        transform.Translate(new Vector2(_relativeSpeedToGround, _jumpHeight) * Time.deltaTime);
+        
     }
 
+    private void LateUpdate()
+    {
+        _relativeSpeedToGround = -1 * (Player.Instance.relativeSpeedToGround + moveSpeed);
+        transform.Translate(new Vector2(_relativeSpeedToGround, _jumpHeight) * Time.smoothDeltaTime);
+    }
     public void SetParams(Vector2 position)
     {
         transform.position = position;
@@ -57,7 +59,6 @@ public class Cat : MonoBehaviour {
         if (_boxCollider != null)
         {
             _boxCollider.enabled = true;
-            _rb2D.isKinematic = true;
         }
         if (_animator)
         {
@@ -89,7 +90,6 @@ public class Cat : MonoBehaviour {
             _animator.SetBool("dead", true);
             _boxCollider.enabled = false;
             _dead = true;
-            _rb2D.isKinematic = false;
             Player.Instance.StatTracker("catKill");
             SoundManager.Instance.EnemyPlayOneShot(SoundManager.Instance.explodeCat);
         }

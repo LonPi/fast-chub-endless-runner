@@ -44,8 +44,11 @@ public class Player : MonoBehaviour
         _hornPick = 0f,
         _shieldDuration = 10f,
         _shieldTimer = 0f,
-        _hornDuration = 3f,
+        _hornDuration = 5f,
         _hornTimer = 0f;
+    int swipeID = -1;
+    Vector2 startPos;
+    float minSwipe = 30f;
 
     void Start()
     {
@@ -96,14 +99,47 @@ public class Player : MonoBehaviour
     {
         _inputAtk = false;
         _inputJump = false;
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
+        
+        //mobile input
+        foreach (var T in Input.touches)
         {
-            Vector2 touchDeltaPosition = Input.GetTouch(0).deltaPosition;
-            if (touchDeltaPosition.x == 0f && touchDeltaPosition.y == 0f)
-                _inputJump = true;
-            else
-                _inputAtk = true;
+            var P = T.position;
+            if (T.phase == TouchPhase.Began && swipeID == -1)
+            {
+                swipeID = T.fingerId;
+                startPos = P;
+            }
+            else if (T.fingerId == swipeID)
+            {
+                var delta = P - startPos;
+                if (T.phase == TouchPhase.Moved && delta.magnitude > minSwipe)
+                {
+                    swipeID = -1;
+                    _inputAtk = true;
+                }
+
+
+                else if ((T.phase == TouchPhase.Canceled || T.phase == TouchPhase.Ended) && delta.magnitude < minSwipe)
+                {
+                    swipeID = -1;
+                    _inputJump = true;
+                }
+            }
+
         }
+        /*
+        foreach (var T in Input.touches)
+
+            //if (Input.touchCount > 0 && Input.touches.phase == TouchPhase.Ended)
+        {
+            Vector2 touchDeltaPosition = T.deltaPosition;
+            if (T.phase == TouchPhase.Moved && touchDeltaPosition.magnitude > minSwipe)
+                _inputAtk = true;
+            else if ((T.phase == TouchPhase.Ended || T.phase == TouchPhase.Canceled) && touchDeltaPosition.magnitude < minSwipe)
+                _inputJump = true;
+        }
+        */
+        //browser input
         if (Input.GetKeyDown(KeyCode.A))
             _inputAtk = true;
         if (Input.GetKeyDown(KeyCode.Space))
@@ -194,18 +230,18 @@ public class Player : MonoBehaviour
         if (statType == "obstacleDodge")
         {
             _obstacleDodge++;
-            _score += 10f;
+            _score += 2f;
         }
         if (statType == "birdDodge")
         {
             _birdDodge++;
-            _score += 10f;
+            _score += 5f;
             SoundManager.Instance.MiscPlayOneShot(SoundManager.Instance.deadBird);
         }
         if (statType == "catDodge")
         {
             _catDodge++;
-            _score += 10f;
+            _score += 5f;
             SoundManager.Instance.MiscPlayOneShot(SoundManager.Instance.deadCat);
         }
         if (statType == "shieldPick")
@@ -214,14 +250,14 @@ public class Player : MonoBehaviour
             _gotShield = true;
             transform.Find("Bubble").gameObject.SetActive(true);
             _shieldTimer = 0f;
-            //SoundManager.Instance.MiscPlayOneShot(SoundManager.Instance.deadCat);
+            SoundManager.Instance.BuffPlayOneShot(SoundManager.Instance.bubbleStart);
         }
         if (statType == "hornPick")
         {
             _hornPick++;
             _gotHorn = true;
             _hornTimer = 0f;
-            //SoundManager.Instance.MiscPlayOneShot(SoundManager.Instance.deadCat);
+            SoundManager.Instance.BuffPlayOneShot(SoundManager.Instance.summonHorde);
         }
     }
 
@@ -248,5 +284,10 @@ public class Player : MonoBehaviour
             return true;
         else
             return false;
+    }
+
+    public bool TutorialOn()
+    {
+        return tutorial;
     }
 }
