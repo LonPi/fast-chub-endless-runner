@@ -1,5 +1,4 @@
 # fast-chub-endless-runner
 Endless runner game.
 
-Android version
-https://play.google.com/store/apps/details?id=com.BlueKumaGames.Fastchub
+Download from Google Play [here](https://play.google.com/store/apps/details?id=com.BlueKumaGames.Fastchub)
